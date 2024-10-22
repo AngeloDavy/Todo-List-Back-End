@@ -3,18 +3,16 @@ package com.br.todolist.services;
 
 import com.br.todolist.model.Task;
 import com.br.todolist.repository.TaskRepository;
-import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class TaskService {
 
-    @Autowired
     private TaskRepository taskRepository;
 
     public Task createTask(Task task){
@@ -31,4 +29,48 @@ public class TaskService {
                 .orElse(ResponseEntity.notFound().build());
     }
 
+    public ResponseEntity<Task> updateTaskById(Task task, Long id){
+        return taskRepository.findById(id)
+                .map(taskToUpadate ->{
+                    taskToUpadate.setTitle(task.getTitle());
+                    taskToUpadate.setDescription(task.getDescription());
+                    taskToUpadate.setDeadLine(task.getDeadLine());
+                    Task update = taskRepository.save(taskToUpadate);
+                    return ResponseEntity.ok().body(update);
+                }).orElse(ResponseEntity.notFound().build());
+    }
+
+    public ResponseEntity<Object> deleteById (Long id){
+        return taskRepository.findById(id)
+                .map(taskToDelete ->{
+                    taskRepository.deleteById(id);
+                    return ResponseEntity.noContent().build();
+                } ).orElse(ResponseEntity.notFound().build());
+    }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
